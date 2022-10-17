@@ -8,10 +8,5 @@ def get_table_header():
     return datas.columns.to_list()
 
 
-def selected_column_info(datas, column_name):
-    return datas[column_name]
-
-
-if __name__ == "__main__":
-    get_table_header()
-    print(selected_column_info(data_loading(), 'dum'))
+def selected_column_info(column_name):
+    return data_loading()[{'year','dum',column_name}]
