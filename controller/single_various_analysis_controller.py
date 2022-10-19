@@ -1,12 +1,14 @@
+import numpy as np
 import seaborn as sns
-from flask import Blueprint
-from matplotlib import pyplot as plt
+from flask import Blueprint, request
+from matplotlib import pyplot as plt, cm
 from sqlalchemy import not_
 
 from common.ApiResponse import ApiResponse
 from model import BigData
+from utils.O2d import O2d
 from utils.list_object_deal import get_list_selected_attr_by_attrname
-from utils.singleVariousGraphDrawUtil import draw_pie_chart_by_value_and_label
+from utils.singleVariousGraphDrawUtil import draw_pie_chart_by_value_and_label, draw_comparative_with_pie
 
 singleVariousModule = Blueprint('singleVariousModule', __name__)
 
@@ -89,21 +91,23 @@ def get_box_plot_by_cityName():
     )
 
 
+@singleVariousModule.route('/getPieChartDataByCityName')
+def get_pie_chart_data_by_cityName():
+    cityName = request.values.get('cityName')
+    datas = BigData.query \
+        .filter_by(name=cityName) \
+        .all()
+    return ApiResponse.success(data=O2d.obj_to_list(datas))
+
+
 @singleVariousModule.route('/getPieChartByCityNameAndColName')
 def get_pie_chart_by_cityName_and_ColName():
+    cityName = request.values.get('cityName')
     datas = BigData.query \
-        .filter_by(name='漳州市') \
+        .filter_by(name=cityName) \
         .all()
-    city_income = get_list_selected_attr_by_attrname(datas, 'city_income')
-    village_income = get_list_selected_attr_by_attrname(datas, 'village_income')
-    print(city_income)
-    print(village_income)
-
-    income_label = 'village', 'city'
-    plt.subplot(1,2,1)
-    draw_pie_chart_by_value_and_label(income_label, (city_income[-1], village_income[-1]))
-    plt.subplot(1, 2, 2)
-    draw_pie_chart_by_value_and_label(income_label, (city_income[-1], village_income[-1]))
-    plt.show()
-
-    return ApiResponse.success()
+    result = draw_comparative_with_pie(datas)
+    print(result)
+    return ApiResponse.success(
+        data=result
+    )
