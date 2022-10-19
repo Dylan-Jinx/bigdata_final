@@ -16,3 +16,10 @@ def get_list_attr_by_attrnames(data, attr):
             temp.__setattr__(v, obj.__getattribute__(v))
         list.append(temp)
     return list
+
+
+def get_list_selected_attr_by_attrname(data, attrname) -> list:
+    list = []
+    for obj in data:
+        list.append(obj.__getattribute__(attrname))
+    return list

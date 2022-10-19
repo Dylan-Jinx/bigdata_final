@@ -1,11 +1,13 @@
 import numpy as np
 
+from utils.O2d import O2d
 
-def data_descriptive_statistics(data: np.ndarray):
+
+def data_descriptive_statistics(data: np.ndarray) -> dict:
     desc = Description(
         data.min(), data.max(), data.mean(), data.std(), np.median(data), data.var(), data.ptp()
     )
-    return desc
+    return O2d.obj_to_dic(desc)
 
 
 class Description:
