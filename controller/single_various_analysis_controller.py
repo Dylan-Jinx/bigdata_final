@@ -17,81 +17,43 @@ singleVariousModule = Blueprint('singleVariousModule', __name__)
 
 
 @singleVariousModule.route('/getBoxPlotByCityName')
-# TODO:
 def get_box_plot_by_cityName():
-    datas = BigData.query.all()
-    whole_description = {}
+    year = request.values.get("year")
+    datas = list(BigData.query.filter(not_(BigData.city_ratio == 0))
+                 .filter(not_(BigData.income == 0))
+                 .filter(not_(BigData.theil_index == 0))
+                 .filter(not_(BigData.population == 0))
+                 .filter_by(year=year))
+    data1_list = []
+    data1_list.append(get_list_selected_attr_by_attrname(datas, "income"))
+    data1_list.append(get_list_selected_attr_by_attrname(datas, "population"))
 
-    datas_ex_shenZhen = BigData.query.filter(not_(BigData.name == '深圳市')).all()
-    datas_ex_cityIncomePopulationRatioIsZero = BigData.query.filter(
-        not_(BigData.city_income_population_ratio == 0.0)).all()
+    plt.figure(figsize=(8.4, 4.8))  # 画布
+    plt.subplot(1, 2, 1)
+    plt.grid(True)  # 显示网格
+    plt.boxplot(data1_list,
+                labels=("总收入", "人口"),  # 为箱线图添加标签，类似于图例的作用
+                sym="g+",  # 异常点形状，默认为蓝色的“+”
+                showmeans=True  # 是否显示均值，默认不显示
+                )
+    plt.title("总收入与总人口指标的箱线图")
 
-    datas_ex_villageAbleIncomeRatio = BigData.query \
-        .filter(not_(BigData.village_able_income_ratio == 0.0)) \
-        .filter(not_(BigData.name == '深圳市')) \
-        .all()
-
-    datas_ex_villagePopulationIsZero = BigData.query \
-        .filter(not_(BigData.village_population == 0)) \
-        .all()
-
-    datas_ex_villagePopulationRatio = BigData.query \
-        .filter(not_(BigData.village_population_ratio == 0)) \
-        .all()
-
-    datas_ex_villageIncome = BigData.query \
-        .filter(not_(BigData.village_income == 0)) \
-        .all()
-
-    village_able_income = get_list_selected_attr_by_attrname(datas_ex_villageAbleIncomeRatio, 'village_able_income')
-    population = get_list_selected_attr_by_attrname(datas, 'population')
-
-    city_population = get_list_selected_attr_by_attrname(datas, 'city_population')
-    village_population = get_list_selected_attr_by_attrname(datas, 'village_population')
-    income = get_list_selected_attr_by_attrname(datas, 'population')
-
-    city_income = get_list_selected_attr_by_attrname(datas, 'city_income')
-    city_able_income = get_list_selected_attr_by_attrname(datas, 'city_able_income')
-
-    city_able_income_ratio = get_list_selected_attr_by_attrname(datas, 'city_able_income_ratio')
-    city_population_ratio = get_list_selected_attr_by_attrname(datas, 'city_population_ratio')
-    village_able_income_ratio = get_list_selected_attr_by_attrname(datas, 'village_able_income_ratio')
-
-    village_population_ratio = get_list_selected_attr_by_attrname(datas, 'village_population_ratio')
-    village_income_population_ratio = get_list_selected_attr_by_attrname(datas, 'village_income_population_ratio')
-    city_income_population_ratio = get_list_selected_attr_by_attrname(datas, 'city_income_population_ratio')
-
-    theil_index = get_list_selected_attr_by_attrname(datas, 'theil_index')
-    city_ratio = get_list_selected_attr_by_attrname(datas, 'city_ratio')
-    village_income = get_list_selected_attr_by_attrname(datas, 'village_income')
-
-    whole_description.__setitem__("city_able_income", city_able_income)
-    whole_description.__setitem__("village_able_income", village_able_income)
-    whole_description.__setitem__("population", population)
-    whole_description.__setitem__("city_population", city_population)
-    whole_description.__setitem__("village_population", village_population)
-    whole_description.__setitem__("income", income)
-    whole_description.__setitem__("city_income", city_income)
-    whole_description.__setitem__("village_income", village_income)
-    whole_description.__setitem__("city_able_income_ratio", city_able_income_ratio)
-    whole_description.__setitem__("city_population_ratio", city_population_ratio)
-    whole_description.__setitem__("village_able_income_ratio", village_able_income_ratio)
-    whole_description.__setitem__("village_population_ratio", village_population_ratio)
-    whole_description.__setitem__("village_income_population_ratio", village_income_population_ratio)
-    whole_description.__setitem__("city_income_population_ratio", city_income_population_ratio)
-    whole_description.__setitem__("theil_index", theil_index)
-    whole_description.__setitem__("city_ratio", city_ratio)
-
-    keyList = []
-
-    for i in whole_description.keys():
-        keyList.append(i)
-
-    for temp in keyList:
-        sns.boxplot(temp, whole_description.get(temp), width=0.3)
-    plt.show()
-
+    plt.subplot(1, 2, 2)
+    data2_list = []
+    data2_list.append(get_list_selected_attr_by_attrname(datas, "city_ratio"))
+    data2_list.append(get_list_selected_attr_by_attrname(datas, "theil_index"))
+    plt.boxplot(data2_list,
+                labels=("城镇化率", "泰尔指数"),
+                sym="g+",  # 异常点形状，默认为蓝色的“+”
+                showmeans=True  # 是否显示均值，默认不显示
+                )
+    plt.title("城镇化率、泰尔指数指标的箱线图")
+    plt.tight_layout()
+    plt.savefig('box_line.png')
+    pic1 = return_img_stream('box_line.png')
+    plt.close()
     return ApiResponse.success(
+        data=pic1
     )
 
 
@@ -111,7 +73,6 @@ def get_pie_chart_by_cityName_and_ColName():
         .filter_by(name=cityName) \
         .all()
     result = draw_comparative_with_pie(datas)
-    print(result)
     return ApiResponse.success(
         data=result
     )
@@ -120,7 +81,6 @@ def get_pie_chart_by_cityName_and_ColName():
 @singleVariousModule.route("/getHistogramChartByYear")
 def get_histogram_chart_by_cityName():
     year = request.values.get('year')
-    print(year)
     datas = db.session.query(BigData.name, BigData.population) \
         .filter(not_(BigData.population == 0)) \
         .filter_by(year=year) \
