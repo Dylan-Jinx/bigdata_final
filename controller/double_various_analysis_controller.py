@@ -44,6 +44,7 @@ def scatter_graph_by_colName():
     plt.tight_layout()
     plt.savefig('scatter.png')
     pic1 = return_img_stream('scatter.png')
+    plt.close()
     return ApiResponse.success(
         data=pic1
     )
