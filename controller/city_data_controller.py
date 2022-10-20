@@ -1,8 +1,12 @@
 import json
+import select
 
+import sqlalchemy
 from flask import Blueprint, request
 from sqlalchemy import between, and_
+from sqlalchemy.ext.asyncio import engine
 
+from app import db
 from common.ApiResponse import ApiResponse
 from model import BigData
 from utils.O2d import O2d
@@ -53,3 +57,12 @@ def get_city_single_data():
     return ApiResponse.success(
         data=O2d.obj_to_list(result)
     )
+
+
+@cityDataModule.route("getCityNames")
+def get_city_names():
+    datas = db.session.query(BigData.name).all()
+    result = []
+    for i in datas:
+        result.append(i[0])
+    return ApiResponse.success(data=list(set(result)))

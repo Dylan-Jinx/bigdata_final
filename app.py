@@ -13,7 +13,6 @@ from controller.statistics_controller import statisticsModule
 from controller.single_various_analysis_controller import singleVariousModule
 from model import BigData
 from utils.O2d import O2d
-
 CORS(app, resources={r"/*": {"origins": "*"}})
 app.register_blueprint(cityDataModule, url_prefix='/cityData')
 app.register_blueprint(statisticsModule, url_prefix='/statistics')
