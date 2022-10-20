@@ -61,3 +61,27 @@ def get_city_names():
     for i in datas:
         result.append(i[0])
     return ApiResponse.success(data=list(set(result)))
+
+
+@cityDataModule.route("getCityHeader")
+def get_city_header():
+    whole_description = {}
+    whole_description.__setitem__("city_able_income", "城市可支配收入")
+    whole_description.__setitem__("village_able_income", "乡村可支配收入")
+    whole_description.__setitem__("population", "人口")
+    whole_description.__setitem__("city_population", "城市人口")
+    whole_description.__setitem__("village_population", "乡村人口")
+    whole_description.__setitem__("income", "收入")
+    whole_description.__setitem__("city_income", "城市收入")
+    whole_description.__setitem__("village_income", "乡村收入")
+    whole_description.__setitem__("city_able_income_ratio", "城市可支配收入比")
+    whole_description.__setitem__("city_population_ratio", "城市人口比")
+    whole_description.__setitem__("village_able_income_ratio", "乡村可支配收入比")
+    whole_description.__setitem__("village_population_ratio", "乡村人口比")
+    whole_description.__setitem__("village_income_population_ratio", "乡村可支配收入与人口比")
+    whole_description.__setitem__("city_income_population_ratio", "城市收入与人口比")
+    whole_description.__setitem__("theil_index", "泰尔指数")
+    whole_description.__setitem__("city_ratio", "城镇化率")
+    return ApiResponse.success(
+        data=whole_description
+    )
