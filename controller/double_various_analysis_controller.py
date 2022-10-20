@@ -40,6 +40,7 @@ def scatter_graph_by_colName():
     scatter = ax.scatter(d1, d2, marker='o', c=z, s=15, label='LST', cmap='Spectral_r')
     cbar = plt.colorbar(scatter, shrink=1, orientation='vertical', extend='both', pad=0.015, aspect=30,
                         label='frequency')  # ori
+    plt.title("相关联系散点图")
     plt.tight_layout()
     plt.savefig('scatter.png')
     pic1 = return_img_stream('scatter.png')
