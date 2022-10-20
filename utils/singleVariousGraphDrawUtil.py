@@ -5,7 +5,9 @@ import numpy as np
 import seaborn as sns
 from matplotlib import cm
 from matplotlib import pyplot as plt
+from sqlalchemy import not_
 
+from model import BigData
 from utils.imageConvert import return_img_stream
 from utils.list_object_deal import get_list_selected_attr_by_attrname, get_key_val_by_query_datas
 
@@ -72,5 +74,210 @@ def draw_dist_plot_by_data_and_info(
     plt.xticks(fontsize=20)
     plt.yticks(fontsize=20)
     plt.xlabel(xlabel, fontsize=20)
-    plt.ylabel("密度分布", fontsize=20)
+    plt.ylabel("分布", fontsize=20)
     plt.title(title, fontsize=20)
+
+
+def year_intensify_graph_picture(year):
+    plt.figure(dpi=120, figsize=(15, 10))
+    datas = BigData.query \
+        .filter_by(year=year) \
+        .all()
+    datas_ex_shenZhen = BigData.query.filter(not_(BigData.name == '深圳市')).all()
+    datas_ex_cityIncomePopulationRatioIsZero = BigData.query.filter(
+        not_(BigData.city_income_population_ratio == 0.0)).all()
+
+    datas_ex_villageAbleIncomeRatio = BigData.query \
+        .filter(not_(BigData.village_able_income_ratio == 0.0)) \
+        .filter(not_(BigData.name == '深圳市')) \
+        .all()
+
+    datas_ex_villagePopulationIsZero = BigData.query \
+        .filter(not_(BigData.village_population == 0)) \
+        .all()
+
+    datas_ex_villagePopulationRatio = BigData.query \
+        .filter(not_(BigData.village_population_ratio == 0)) \
+        .all()
+
+    datas_ex_villageIncome = BigData.query \
+        .filter(not_(BigData.village_income == 0)) \
+        .all()
+
+    village_able_income = get_list_selected_attr_by_attrname(datas_ex_villageAbleIncomeRatio, 'village_able_income')
+    population = get_list_selected_attr_by_attrname(datas, 'population')
+
+    city_population = get_list_selected_attr_by_attrname(datas, 'city_population')
+    village_population = get_list_selected_attr_by_attrname(datas, 'village_population')
+    income = get_list_selected_attr_by_attrname(datas, 'population')
+
+    city_income = get_list_selected_attr_by_attrname(datas, 'city_income')
+    city_able_income = get_list_selected_attr_by_attrname(datas, 'city_able_income')
+
+    city_able_income_ratio = get_list_selected_attr_by_attrname(datas, 'city_able_income_ratio')
+    city_population_ratio = get_list_selected_attr_by_attrname(datas, 'city_population_ratio')
+    village_able_income_ratio = get_list_selected_attr_by_attrname(datas, 'village_able_income_ratio')
+
+    village_population_ratio = get_list_selected_attr_by_attrname(datas, 'village_population_ratio')
+    village_income_population_ratio = get_list_selected_attr_by_attrname(datas, 'village_income_population_ratio')
+    city_income_population_ratio = get_list_selected_attr_by_attrname(datas, 'city_income_population_ratio')
+
+    theil_index = get_list_selected_attr_by_attrname(datas, 'theil_index')
+    city_ratio = get_list_selected_attr_by_attrname(datas, 'city_ratio')
+    village_income = get_list_selected_attr_by_attrname(datas, 'village_income')
+
+    plt.subplot(4, 4, 1)
+    sns.kdeplot(village_income)
+    plt.title("乡村收入")
+    plt.subplot(4, 4, 2)
+    sns.kdeplot(village_able_income_ratio)
+    plt.title("乡村可支配收入")
+    plt.subplot(4, 4, 3)
+    sns.kdeplot(village_population_ratio)
+    plt.title("乡村人口")
+    plt.subplot(4, 4, 4)
+    sns.kdeplot(village_income_population_ratio)
+    plt.title("乡村收入与人口比")
+    plt.subplot(4, 4, 5)
+    sns.kdeplot(city_income_population_ratio)
+    plt.title("城市收入与人口比")
+    plt.subplot(4, 4, 6)
+    sns.kdeplot(theil_index)
+    plt.title("泰尔指数")
+    plt.subplot(4, 4, 7)
+    sns.kdeplot(city_ratio)
+    plt.title("城镇化")
+    plt.subplot(4, 4, 8)
+    sns.kdeplot(village_able_income)
+    plt.title("乡村可支配收入")
+    plt.subplot(4, 4, 9)
+    sns.kdeplot(population)
+    plt.title("总人口")
+    plt.subplot(4, 4, 10)
+    sns.kdeplot(city_population)
+    plt.title("城市人口")
+    plt.subplot(4, 4, 11)
+    sns.kdeplot(village_population)
+    plt.title("乡村人口")
+    plt.subplot(4, 4, 12)
+    sns.kdeplot(income)
+    plt.title("总收入")
+    plt.subplot(4, 4, 13)
+    sns.kdeplot(city_income)
+    plt.title("城市收入")
+    plt.subplot(4, 4, 14)
+    sns.kdeplot(city_able_income)
+    plt.title("城市可支配收入")
+    plt.subplot(4, 4, 15)
+    sns.kdeplot(city_able_income_ratio)
+    plt.title("城市可支配收入比")
+    plt.subplot(4, 4, 16)
+    sns.kdeplot(city_population_ratio)
+    plt.title("城市人口比")
+    plt.legend()
+    plt.tight_layout()
+    plt.savefig("year_intensify.png")
+    plt.close()
+    return return_img_stream("year_intensify.png")
+
+
+def total_intensify_graph_picture():
+    plt.figure(dpi=120, figsize=(15, 10))
+    datas = BigData.query \
+        .all()
+    datas_ex_shenZhen = BigData.query.filter(not_(BigData.name == '深圳市')).all()
+    datas_ex_cityIncomePopulationRatioIsZero = BigData.query.filter(
+        not_(BigData.city_income_population_ratio == 0.0)).all()
+
+    datas_ex_villageAbleIncomeRatio = BigData.query \
+        .filter(not_(BigData.village_able_income_ratio == 0.0)) \
+        .filter(not_(BigData.name == '深圳市')) \
+        .all()
+
+    datas_ex_villagePopulationIsZero = BigData.query \
+        .filter(not_(BigData.village_population == 0)) \
+        .all()
+
+    datas_ex_villagePopulationRatio = BigData.query \
+        .filter(not_(BigData.village_population_ratio == 0)) \
+        .all()
+
+    datas_ex_villageIncome = BigData.query \
+        .filter(not_(BigData.village_income == 0)) \
+        .all()
+
+    village_able_income = get_list_selected_attr_by_attrname(datas_ex_villageAbleIncomeRatio, 'village_able_income')
+    population = get_list_selected_attr_by_attrname(datas, 'population')
+
+    city_population = get_list_selected_attr_by_attrname(datas, 'city_population')
+    village_population = get_list_selected_attr_by_attrname(datas, 'village_population')
+    income = get_list_selected_attr_by_attrname(datas, 'population')
+
+    city_income = get_list_selected_attr_by_attrname(datas, 'city_income')
+    city_able_income = get_list_selected_attr_by_attrname(datas, 'city_able_income')
+
+    city_able_income_ratio = get_list_selected_attr_by_attrname(datas, 'city_able_income_ratio')
+    city_population_ratio = get_list_selected_attr_by_attrname(datas, 'city_population_ratio')
+    village_able_income_ratio = get_list_selected_attr_by_attrname(datas, 'village_able_income_ratio')
+
+    village_population_ratio = get_list_selected_attr_by_attrname(datas, 'village_population_ratio')
+    village_income_population_ratio = get_list_selected_attr_by_attrname(datas, 'village_income_population_ratio')
+    city_income_population_ratio = get_list_selected_attr_by_attrname(datas, 'city_income_population_ratio')
+
+    theil_index = get_list_selected_attr_by_attrname(datas, 'theil_index')
+    city_ratio = get_list_selected_attr_by_attrname(datas, 'city_ratio')
+    village_income = get_list_selected_attr_by_attrname(datas, 'village_income')
+
+    plt.subplot(4, 4, 1)
+    sns.kdeplot(village_income)
+    plt.title("乡村收入")
+    plt.subplot(4, 4, 2)
+    sns.kdeplot(village_able_income_ratio)
+    plt.title("乡村可支配收入")
+    plt.subplot(4, 4, 3)
+    sns.kdeplot(village_population_ratio)
+    plt.title("乡村人口")
+    plt.subplot(4, 4, 4)
+    sns.kdeplot(village_income_population_ratio)
+    plt.title("乡村收入与人口比")
+    plt.subplot(4, 4, 5)
+    sns.kdeplot(city_income_population_ratio)
+    plt.title("城市收入与人口比")
+    plt.subplot(4, 4, 6)
+    sns.kdeplot(theil_index)
+    plt.title("泰尔指数")
+    plt.subplot(4, 4, 7)
+    sns.kdeplot(city_ratio)
+    plt.title("城镇化")
+    plt.subplot(4, 4, 8)
+    sns.kdeplot(village_able_income)
+    plt.title("乡村可支配收入")
+    plt.subplot(4, 4, 9)
+    sns.kdeplot(population)
+    plt.title("总人口")
+    plt.subplot(4, 4, 10)
+    sns.kdeplot(city_population)
+    plt.title("城市人口")
+    plt.subplot(4, 4, 11)
+    sns.kdeplot(village_population)
+    plt.title("乡村人口")
+    plt.subplot(4, 4, 12)
+    sns.kdeplot(income)
+    plt.title("总收入")
+    plt.subplot(4, 4, 13)
+    sns.kdeplot(city_income)
+    plt.title("城市收入")
+    plt.subplot(4, 4, 14)
+    sns.kdeplot(city_able_income)
+    plt.title("城市可支配收入")
+    plt.subplot(4, 4, 15)
+    sns.kdeplot(city_able_income_ratio)
+    plt.title("城市可支配收入比")
+    plt.subplot(4, 4, 16)
+    sns.kdeplot(city_population_ratio)
+    plt.title("城市人口比")
+    plt.legend()
+    plt.tight_layout()
+    plt.savefig("total_intensify.png")
+    plt.close()
+    return return_img_stream("total_intensify.png")

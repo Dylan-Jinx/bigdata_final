@@ -1,3 +1,4 @@
+import numpy as np
 import seaborn as sns
 from flask import Blueprint, request
 from matplotlib import pyplot as plt
@@ -9,12 +10,14 @@ from model import BigData
 from utils.O2d import O2d
 from utils.imageConvert import return_img_stream
 from utils.list_object_deal import get_list_selected_attr_by_attrname, get_key_val_by_query_datas
-from utils.singleVariousGraphDrawUtil import draw_comparative_with_pie, draw_dist_plot_by_data_and_info
+from utils.singleVariousGraphDrawUtil import draw_comparative_with_pie, draw_dist_plot_by_data_and_info, \
+    total_intensify_graph_picture, year_intensify_graph_picture
 
 singleVariousModule = Blueprint('singleVariousModule', __name__)
 
 
 @singleVariousModule.route('/getBoxPlotByCityName')
+# TODO:
 def get_box_plot_by_cityName():
     datas = BigData.query.all()
     whole_description = {}
@@ -114,8 +117,8 @@ def get_pie_chart_by_cityName_and_ColName():
     )
 
 
-@singleVariousModule.route("/getIntensifyChartByCityName")
-def get_intensify_chart_by_cityName():
+@singleVariousModule.route("/getHistogramChartByYear")
+def get_histogram_chart_by_cityName():
     year = request.values.get('year')
     print(year)
     datas = db.session.query(BigData.name, BigData.population) \
@@ -148,6 +151,20 @@ def get_intensify_chart_by_cityName():
     plt.savefig("displot2.png")
     pic2 = return_img_stream("displot2.png")
     plt.close()
+    result = {
+        "pic1": pic1,
+        "pic2": pic2
+    }
+    return ApiResponse.success(
+        data=result
+    )
+
+
+@singleVariousModule.route("/getIntensifyChartByYear")
+def get_intensify_chart_by_cityName():
+    year = request.values.get("year")
+    pic1 = total_intensify_graph_picture()
+    pic2 = year_intensify_graph_picture(year)
     result = {
         "pic1": pic1,
         "pic2": pic2
