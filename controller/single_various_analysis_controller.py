@@ -1,14 +1,15 @@
-import numpy as np
 import seaborn as sns
 from flask import Blueprint, request
-from matplotlib import pyplot as plt, cm
+from matplotlib import pyplot as plt
 from sqlalchemy import not_
 
+from app import db
 from common.ApiResponse import ApiResponse
 from model import BigData
 from utils.O2d import O2d
-from utils.list_object_deal import get_list_selected_attr_by_attrname
-from utils.singleVariousGraphDrawUtil import draw_pie_chart_by_value_and_label, draw_comparative_with_pie
+from utils.imageConvert import return_img_stream
+from utils.list_object_deal import get_list_selected_attr_by_attrname, get_key_val_by_query_datas
+from utils.singleVariousGraphDrawUtil import draw_comparative_with_pie, draw_dist_plot_by_data_and_info
 
 singleVariousModule = Blueprint('singleVariousModule', __name__)
 
@@ -108,6 +109,49 @@ def get_pie_chart_by_cityName_and_ColName():
         .all()
     result = draw_comparative_with_pie(datas)
     print(result)
+    return ApiResponse.success(
+        data=result
+    )
+
+
+@singleVariousModule.route("/getIntensifyChartByCityName")
+def get_intensify_chart_by_cityName():
+    year = request.values.get('year')
+    print(year)
+    datas = db.session.query(BigData.name, BigData.population) \
+        .filter(not_(BigData.population == 0)) \
+        .filter_by(year=year) \
+        .all()
+    plt.figure(dpi=120, figsize=(30, 13))
+    plt.subplot(1, 2, 1)
+    draw_dist_plot_by_data_and_info(datas, "人口值", "人口密度曲线")
+    plt.subplot(1, 2, 2)
+    datas = db.session.query(BigData.name, BigData.income).filter(not_(BigData.income == 0)) \
+        .filter_by(year=year) \
+        .all()
+    draw_dist_plot_by_data_and_info(datas, "收入值", "收入密度曲线")
+    plt.savefig("displot1.png")
+    pic1 = return_img_stream("displot1.png")
+    plt.close()
+    datas = db.session.query(BigData.name, BigData.city_ratio) \
+        .filter(not_(BigData.city_ratio == 0)) \
+        .filter_by(year=year) \
+        .all()
+    plt.figure(dpi=120, figsize=(30, 13))
+    plt.subplot(1, 2, 1)
+    draw_dist_plot_by_data_and_info(datas, "城镇化率", "城镇化率曲线")
+    plt.subplot(1, 2, 2)
+    datas = db.session.query(BigData.name, BigData.theil_index).filter(not_(BigData.theil_index == 0)) \
+        .filter_by(year=year) \
+        .all()
+    draw_dist_plot_by_data_and_info(datas, "泰尔指数", "泰尔指数密度曲线")
+    plt.savefig("displot2.png")
+    pic2 = return_img_stream("displot2.png")
+    plt.close()
+    result = {
+        "pic1": pic1,
+        "pic2": pic2
+    }
     return ApiResponse.success(
         data=result
     )

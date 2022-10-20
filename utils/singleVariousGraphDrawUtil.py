@@ -2,11 +2,12 @@ import os
 import shutil
 
 import numpy as np
+import seaborn as sns
 from matplotlib import cm
 from matplotlib import pyplot as plt
 
 from utils.imageConvert import return_img_stream
-from utils.list_object_deal import get_list_selected_attr_by_attrname
+from utils.list_object_deal import get_list_selected_attr_by_attrname, get_key_val_by_query_datas
 
 # 中文乱码解决方法
 plt.rcParams['font.family'] = ['Arial Unicode MS', 'Microsoft YaHei', 'SimHei', 'sans-serif']
@@ -54,3 +55,22 @@ def draw_comparative_with_pie(datas):
     plt.savefig('pie.png')
     plt.close()
     return return_img_stream('pie.png')
+
+
+def draw_dist_plot_by_data_and_info(
+        datas, xlabel, title
+):
+    key, value = get_key_val_by_query_datas(datas)
+    sns.distplot(value,
+                 hist=True,
+                 kde=True,  # 开启核密度曲线kernel density estimate (KDE)
+                 kde_kws={'linestyle': '--', 'linewidth': '1', 'color': '#c72e29',
+                          # 设置外框线属性
+                          },
+                 color='#098154'
+                 )
+    plt.xticks(fontsize=20)
+    plt.yticks(fontsize=20)
+    plt.xlabel(xlabel, fontsize=20)
+    plt.ylabel("密度分布", fontsize=20)
+    plt.title(title, fontsize=20)
