@@ -69,4 +69,6 @@ def get_log():
 
 
 if __name__ == '__main__':
+    os.system("tensorboard - -logdir =./ --port 6018 --host 0.0.0.0")
     app.run()
+
