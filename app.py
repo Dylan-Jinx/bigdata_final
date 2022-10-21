@@ -18,6 +18,7 @@ from controller.city_data_controller import cityDataModule
 from controller.statistics_controller import statisticsModule
 from controller.single_various_analysis_controller import singleVariousModule
 from controller.double_various_analysis_controller import doubleVariousModule
+from controller.machine_learning_controller import machineLearningModule
 from model import BigData
 from utils.O2d import O2d
 
@@ -26,6 +27,7 @@ app.register_blueprint(cityDataModule, url_prefix='/cityData')
 app.register_blueprint(statisticsModule, url_prefix='/statistics')
 app.register_blueprint(singleVariousModule, url_prefix='/singleVarious')
 app.register_blueprint(doubleVariousModule, url_prefix='/doubleVarious')
+app.register_blueprint(machineLearningModule, url_prefix='/ml')
 
 line_number = [0]
 x = None
@@ -64,7 +66,6 @@ def get_log():
 # @app.errorhandler(Exception)
 # def error_handler(e):
 #     return ApiResponse.error(msg=str(e))
-
 
 
 if __name__ == '__main__':
