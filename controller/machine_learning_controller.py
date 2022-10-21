@@ -1,4 +1,3 @@
-import json
 import os
 from datetime import datetime
 
@@ -14,7 +13,6 @@ from sklearn.preprocessing import MinMaxScaler
 
 from common.ApiResponse import ApiResponse
 from model import BigData
-from utils.O2d import O2d
 from utils.imageConvert import return_img_stream
 from utils.list_object_deal import all_data_convert_dataFrame
 
