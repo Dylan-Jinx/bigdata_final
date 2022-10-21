@@ -27,7 +27,7 @@ def use_multilayer_perception():
     os.popen("tensorboard --logdir=./ --port 6018 --host 0.0.0.0")
     datas = BigData.query.all()
     df = all_data_convert_dataFrame(datas)
-
+    print(request.json)
     param1 = request.json.get('param1')
     param2 = request.json.get('param2')
     para_batch = int(request.json.get('batch'))
