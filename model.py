@@ -3,6 +3,21 @@ from flask_sqlalchemy import SQLAlchemy
 from app import db
 
 
+class Province(db.Model):
+    __tablename__ = 'province'
+    id = db.Column(db.Integer, primary_key=True)
+    code = db.Column(db.String(6))
+    name = db.Column(db.String(20))
+
+
+class City(db.Model):
+    __tablename__ = 'city'
+    id = db.Column(db.Integer, primary_key=True)
+    code = db.Column(db.String(6))
+    name = db.Column(db.String(20))
+    provincecode = db.Column(db.String(6))
+
+
 class BigData(db.Model):
     # 设置表名
     __tablename__ = 'bigdata'

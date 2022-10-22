@@ -19,6 +19,7 @@ from controller.statistics_controller import statisticsModule
 from controller.single_various_analysis_controller import singleVariousModule
 from controller.double_various_analysis_controller import doubleVariousModule
 from controller.machine_learning_controller import machineLearningModule
+from controller.big_screen_visual_controller import bigScreenVisualModule
 from model import BigData
 from utils.O2d import O2d
 
@@ -28,6 +29,7 @@ app.register_blueprint(statisticsModule, url_prefix='/statistics')
 app.register_blueprint(singleVariousModule, url_prefix='/singleVarious')
 app.register_blueprint(doubleVariousModule, url_prefix='/doubleVarious')
 app.register_blueprint(machineLearningModule, url_prefix='/ml')
+app.register_blueprint(bigScreenVisualModule, url_prefix='/visual')
 
 line_number = [0]
 x = None
