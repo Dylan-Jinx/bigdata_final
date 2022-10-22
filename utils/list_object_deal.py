@@ -53,7 +53,7 @@ def all_data_convert_dataFrame(datas):
         "乡村收入": get_list_selected_attr_by_attrname(datas, "village_income"),
         "乡村收入与人口比 ": get_list_selected_attr_by_attrname(datas, "village_income_population_ratio"),
         "乡村人口": get_list_selected_attr_by_attrname(datas, "village_population"),
-        "乡村人口与重人口比": get_list_selected_attr_by_attrname(datas, "village_population_ratio")
+        "乡村人口与总人口比": get_list_selected_attr_by_attrname(datas, "village_population_ratio")
     }
     df = pd.DataFrame(testxx)
     return df
