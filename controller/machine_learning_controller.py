@@ -9,7 +9,7 @@ from keras.losses import mean_squared_error
 from matplotlib import pyplot as plt
 from sklearn.metrics import r2_score
 from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import MinMaxScaler
+from sklearn.preprocessing import MinMaxScaler, StandardScaler
 
 from common.ApiResponse import ApiResponse
 from model import BigData
@@ -33,14 +33,17 @@ def use_multilayer_perception():
     para_batch = int(request.json.get('batch'))
     para_feature_hidden = int(request.json.get('feature_hidden'))
     para_max_epoch = int(request.json.get('max_epoch'))
-
+    color_test = request.json.get('color_test')
+    color_pred = request.json.get('color_pred')
+    train_test_ratio = float(request.json.get('train_test_ratio'))
 
     # 分割测试集和训练集
     X_train, X_test, y_train, y_test = train_test_split(df[[param1, param2]], df[['总收入']],
-                                                        test_size=0.3,
+                                                        test_size=train_test_ratio,
                                                         random_state=0)
 
     # 数据规范化处理
+    # StandardScaler().fit_transform()
     X_train = MinMaxScaler().fit_transform(X_train)
     y_train = MinMaxScaler().fit_transform(y_train)
     X_test = MinMaxScaler().fit_transform(X_test)
@@ -67,28 +70,28 @@ def use_multilayer_perception():
               callbacks=[tensorboard_callback])
 
     model.save('train_model/' + datetime.now().strftime("%Y%m%d-%H%M%S") + '/')
-
     y_test_pred = model.predict(X_test)
-    ln_x_test = range(len(X_test))
+    ln_x_test = range(len(y_test))
     plt.title('测试集数值')
-    plt.plot(ln_x_test, y_test, 'blue', lw=2, label='测试值')
+    plt.plot(ln_x_test, y_test, color=color_test, lw=2, label='测试值')
     ln_y_test_pred = range(len(y_test_pred))
     plt.savefig('ml_test.png')
     plt.close()
     plt.title('测试集预测值')
-    plt.plot(ln_y_test_pred, y_test_pred, 'orange', lw=2, label='测试预测值')
+    plt.plot(ln_y_test_pred, y_test_pred, color=color_pred, lw=2, label='测试预测值')
     plt.savefig('ml_test_pred.png')
     plt.close()
 
     r2 = r2_score(y_test, y_test_pred)
     rmse = mean_squared_error(y_test, y_test_pred)
+    convert_rmse = float(rmse[-1])
     pic1 = return_img_stream('ml_test.png')
     pic2 = return_img_stream('ml_test_pred.png')
     result = {
             "pic1": pic1,
             "pic2": pic2,
             "r2": r2,
-            "rmse": "{1:f}".format(r2, rmse[-1])
+            "rmse": float(convert_rmse)
         }
     return ApiResponse.success(
         data=result
